@@ -1,0 +1,14 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: echoserver-v2-secure
+spec:
+  ports:
+    - name: https
+      protocol: TCP
+      port: 8081
+      targetPort: 8081
+  type: LoadBalancer
+  selector:
+    app: echoserver-v2-secure

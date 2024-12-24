@@ -1,0 +1,56 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: echoserver-v2-secure
+spec:
+  selector:
+    matchLabels:
+      app: echoserver-v2-secure
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: echoserver-v2-secure
+    spec:
+      tolerations:
+        - key: "kubernetes.azure.com/scalesetpriority"
+          operator: "Equal"
+          value: "spot"
+          effect: "NoSchedule"
+        - key: "instance"
+          operator: "Equal"
+          value: "standard_d8alds_v6"
+          effect: "PreferNoSchedule"
+      containers:
+        - name: redis-commander
+          image: rediscommander/redis-commander
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: REDIS_HOST
+              value: vaticy-redis-master.vaticy.svc.cluster.local
+            - name: K8S_SIGTERM
+              value: "1"
+          ports:
+            - name: redis-commander
+              containerPort: 8081
+          livenessProbe:
+            httpGet:
+              path: /favicon.png
+              port: 8081
+            initialDelaySeconds: 10
+            timeoutSeconds: 5
+          resources:
+            limits:
+              cpu: "200m"
+              memory: "200M"
+            requests:
+              cpu: "100m"
+              memory: "100M"
+          securityContext:
+            runAsNonRoot: true
+            readOnlyRootFilesystem: false
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL

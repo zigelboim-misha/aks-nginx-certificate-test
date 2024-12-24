@@ -1,0 +1,27 @@
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: echoserver-v2-secure
+  annotations:
+    cert-manager.io/cluster-issuer: production
+    kubernetes.io/ingress.class: external-nginx
+    acme.cert-manager.io/http01-edit-in-place: "true"
+    nginx.ingress.kubernetes.io/rewrite-target: /
+spec:
+  ingressClassName: external-nginx
+  rules:
+    - host: azure.dev.app.vaticy.com
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: echoserver-v2-secure
+                port:
+                  number: 8081
+  tls:
+    - hosts:
+        - azure.dev.app.vaticy.com
+      secretName: secret-azure-dev-app-vaticy-com
