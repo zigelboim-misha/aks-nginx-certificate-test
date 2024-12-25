@@ -5,10 +5,8 @@ metadata:
   name: echoserver-v2-secure
 spec:
   ports:
-    - name: https
+    - port: 8081
       protocol: TCP
-      port: 8081
-      targetPort: 8081
-  type: LoadBalancer
+  type: ClusterIP
   selector:
     app: echoserver-v2-secure
